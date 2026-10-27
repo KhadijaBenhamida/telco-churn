@@ -112,7 +112,3 @@ The checks confirm:
 - customer IDs do not overlap across splits
 - required features are present and missing features fail clearly
 - the selected pipeline reloads without changing predictions
-
-## Handover note
-
-This project is intended to be reusable by another engineer. The raw data is fixed, the environment is defined with `uv`, the inspection report is reproducible, and the model training workflow runs from a terminal entry point. The fitted artifact remains separate from the source code, which is the correct place for reusable training logic.

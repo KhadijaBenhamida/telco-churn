@@ -8,7 +8,7 @@ from sklearn.impute import SimpleImputer
 from sklearn.pipeline import Pipeline
 from sklearn.preprocessing import OneHotEncoder, StandardScaler
 
-from .dataset import PROJECT_ROOT, read_telco_data
+from .dataset import read_telco_data
 
 NUMERIC_FEATURES = ["tenure", "MonthlyCharges", "TotalCharges"]
 CATEGORICAL_FEATURES = ["Contract", "InternetService", "PaymentMethod"]
@@ -16,7 +16,9 @@ FEATURES = NUMERIC_FEATURES + CATEGORICAL_FEATURES
 TARGET_COLUMN = "Churn"
 
 
-def clean_telco_numeric_columns(frame: pd.DataFrame, columns: list[str] | None = None) -> pd.DataFrame:
+def clean_telco_numeric_columns(
+    frame: pd.DataFrame, columns: list[str] | None = None
+) -> pd.DataFrame:
     """Convert numeric columns to numeric dtypes while preserving malformed nonblank values as visible errors."""
     result = frame.copy()
     target_columns = columns or NUMERIC_FEATURES
@@ -68,7 +70,9 @@ def prepare_features(frame: pd.DataFrame) -> pd.DataFrame:
     for column in ["customerID", "Churn"]:
         if column in validated.columns:
             validated = validated.drop(columns=[column])
-    validated = clean_telco_numeric_columns(validated, columns=["tenure", "MonthlyCharges", "TotalCharges"])
+    validated = clean_telco_numeric_columns(
+        validated, columns=["tenure", "MonthlyCharges", "TotalCharges"]
+    )
     missing = [feature for feature in FEATURES if feature not in validated.columns]
     if missing:
         raise KeyError(f"Missing required feature columns: {missing}")

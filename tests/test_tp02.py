@@ -1,17 +1,20 @@
 from __future__ import annotations
 
-import json
 from pathlib import Path
 
-import pandas as pd
 import pytest
 
 from telco_churn.dataset import read_telco_data
 from telco_churn.pipeline import FEATURES, prepare_features
-from telco_churn.prediction import load_model, predict_customers
-from telco_churn.training import make_split, prepare_target, train_and_select
+from telco_churn.prediction import load_model
+from telco_churn.training import make_split, train_and_select
 
 DATA_PATH = Path(__file__).resolve().parents[1] / "data" / "raw" / "telco.csv"
+
+pytestmark = pytest.mark.skipif(
+    not DATA_PATH.exists(),
+    reason="the real Telco CSV is git-ignored; add data/raw/telco.csv to run this file",
+)
 
 
 def test_data_split_has_no_customer_overlap():
@@ -35,7 +38,10 @@ def test_pipeline_handles_numeric_parsing_and_missing_required_columns():
         prepare_features(bad_frame)
 
 
-def test_selected_model_reload_is_consistent():
+def test_selected_model_reload_is_consistent(tmp_path, monkeypatch):
+    # The test must not write into the repository: redirect the artifact directory.
+    monkeypatch.setattr("telco_churn.training.MODEL_DIR", tmp_path)
+
     comparison, metadata, selected_model = train_and_select(DATA_PATH)
     assert not comparison.empty
     assert metadata["model_name"] in comparison["model"].values

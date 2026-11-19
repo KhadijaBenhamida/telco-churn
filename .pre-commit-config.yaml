@@ -1,0 +1,27 @@
+# Lightweight checks that run before a commit is accepted (TP04).
+# Install the hooks once per clone: uv run python -m pre_commit install
+default_language_version:
+  python: python3.12
+
+# Generated/third-party trees are never part of the review scope.
+exclude: ^(mlartifacts/|mlruns/|\.venv/|reports/tp03_artifacts/)
+
+repos:
+  - repo: https://github.com/pre-commit/pre-commit-hooks
+    rev: v6.0.0
+    hooks:
+      - id: trailing-whitespace
+      - id: end-of-file-fixer
+      - id: check-yaml
+      - id: check-added-large-files
+        args: ["--maxkb=2048"]
+
+  - repo: https://github.com/astral-sh/ruff-pre-commit
+    # Same version as the project dev dependency (ruff 0.17.5).
+    rev: v0.17.5
+    hooks:
+      - id: ruff-check
+        args: [--fix]
+        types_or: [python, pyi]
+      - id: ruff-format
+        types_or: [python, pyi]

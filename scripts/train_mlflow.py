@@ -66,9 +66,7 @@ def describe_hyperparameters(estimator) -> dict[str, object]:
 
 def reference_customers(valid_df: pd.DataFrame, count: int = 5) -> pd.DataFrame:
     """Deterministic small batch with complete numeric inputs, sorted by customerID."""
-    usable = valid_df[
-        valid_df["TotalCharges"].astype("string").str.strip().ne("")
-    ].copy()
+    usable = valid_df[valid_df["TotalCharges"].astype("string").str.strip().ne("")].copy()
     return usable.sort_values("customerID").head(count).reset_index(drop=True)
 
 
@@ -276,7 +274,14 @@ def main() -> None:
     print()
     print(
         comparison[
-            ["candidate", "val_average_precision", "val_precision", "val_recall", "val_f1", "decision"]
+            [
+                "candidate",
+                "val_average_precision",
+                "val_precision",
+                "val_recall",
+                "val_f1",
+                "decision",
+            ]
         ].to_string(index=False)
     )
     print()
@@ -287,8 +292,12 @@ def main() -> None:
         print(f"  run {name:<18} {item['run_id']}  model_uri={item['model_uri']}")
     if registry:
         print()
-        print(f"Registered model : {registry['registered_model_name']} version {registry['version']}")
-        print(f"Alias            : {registry['alias']} -> version {registry['alias_now_points_to_version']}")
+        print(
+            f"Registered model : {registry['registered_model_name']} version {registry['version']}"
+        )
+        print(
+            f"Alias            : {registry['alias']} -> version {registry['alias_now_points_to_version']}"
+        )
         print(f"Alias model URI  : {registry['alias_model_uri']}")
     print()
     print(f"Git commit       : {selected_record['git_commit']}")

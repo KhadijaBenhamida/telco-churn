@@ -9,7 +9,12 @@ import pandas as pd
 from sklearn.dummy import DummyClassifier
 from sklearn.ensemble import RandomForestClassifier
 from sklearn.linear_model import LogisticRegression
-from sklearn.metrics import accuracy_score, average_precision_score, confusion_matrix, precision_recall_fscore_support
+from sklearn.metrics import (
+    accuracy_score,
+    average_precision_score,
+    confusion_matrix,
+    precision_recall_fscore_support,
+)
 from sklearn.model_selection import train_test_split
 from sklearn.tree import DecisionTreeClassifier
 
@@ -21,7 +26,9 @@ REPORTS_DIR = PROJECT_ROOT / "reports"
 SEED = 42
 
 
-def make_split(frame: pd.DataFrame, random_state: int = SEED) -> tuple[pd.DataFrame, pd.DataFrame, pd.DataFrame]:
+def make_split(
+    frame: pd.DataFrame, random_state: int = SEED
+) -> tuple[pd.DataFrame, pd.DataFrame, pd.DataFrame]:
     train_df, remaining_df = train_test_split(
         frame,
         test_size=0.4,
@@ -105,7 +112,9 @@ def compare_models(source: str | Path | None = None) -> pd.DataFrame:
     return results
 
 
-def save_selected_model(model, model_name: str, metrics: dict, source: str | Path | None = None) -> dict:
+def save_selected_model(
+    model, model_name: str, metrics: dict, source: str | Path | None = None
+) -> dict:
     MODEL_DIR.mkdir(exist_ok=True, parents=True)
     model_path = MODEL_DIR / f"{model_name}.joblib"
     joblib.dump(model, model_path)
@@ -149,7 +158,9 @@ def train_and_select(source: str | Path | None = None) -> tuple[pd.DataFrame, di
         metrics = evaluate_model(model, X_valid, y_valid)
         results.append({"model": name, **metrics})
 
-    comparison = pd.DataFrame(results).sort_values("average_precision", ascending=False, ignore_index=True)
+    comparison = pd.DataFrame(results).sort_values(
+        "average_precision", ascending=False, ignore_index=True
+    )
     selected_name, selected_metrics = select_best_model(comparison)
     selected_model = dict(fitted_models)[selected_name]
     metadata = save_selected_model(selected_model, selected_name, selected_metrics, source=source)

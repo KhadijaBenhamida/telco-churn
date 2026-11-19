@@ -1,0 +1,12 @@
+After restoring handle_unknown='ignore' in build_preprocessor().
+The same test file must pass again, and the whole suite must stay green.
+
+$ uv run pytest tests/test_prediction.py -q
+.......                                                                  [100%]
+7 passed in 15.11s
+exit=0
+
+$ uv run pytest -q
+...................................                                      [100%]
+35 passed in 30.20s
+exit=0

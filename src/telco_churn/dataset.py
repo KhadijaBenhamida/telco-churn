@@ -50,7 +50,9 @@ def compute_file_hash(path: Path) -> str:
     return hashlib.sha256(path.read_bytes()).hexdigest()
 
 
-def build_report(source: str | Path | None = None, output_path: str | Path | None = None) -> dict[str, Any]:
+def build_report(
+    source: str | Path | None = None, output_path: str | Path | None = None
+) -> dict[str, Any]:
     path = resolve_source(source)
     df = read_telco_data(path)
     target_counts = df["Churn"].value_counts(dropna=False)
@@ -58,8 +60,7 @@ def build_report(source: str | Path | None = None, output_path: str | Path | Non
 
     string_df = df.astype("string")
     whitespace_only_by_column = {
-        column: int(string_df[column].str.strip().eq("").sum())
-        for column in string_df.columns
+        column: int(string_df[column].str.strip().eq("").sum()) for column in string_df.columns
     }
     whitespace_only_total = sum(whitespace_only_by_column.values())
 
@@ -102,7 +103,9 @@ def build_report(source: str | Path | None = None, output_path: str | Path | Non
 
 
 def main() -> None:
-    parser = argparse.ArgumentParser(description="Inspect the Telco churn dataset and save a machine-readable report.")
+    parser = argparse.ArgumentParser(
+        description="Inspect the Telco churn dataset and save a machine-readable report."
+    )
     parser.add_argument("--source", type=str, default=None, help="Path to the dataset to inspect.")
     parser.add_argument(
         "--output",
@@ -113,13 +116,18 @@ def main() -> None:
     args = parser.parse_args()
 
     report = build_report(args.source, args.output)
-    print(json.dumps({
-        "rows": report["dataset"]["rows"],
-        "columns": report["dataset"]["columns"],
-        "target_counts": report["target"]["counts"],
-        "duplicate_customer_ids": report["duplicate_customer_ids"],
-        "source_sha256": report["source"]["sha256"],
-    }, indent=2))
+    print(
+        json.dumps(
+            {
+                "rows": report["dataset"]["rows"],
+                "columns": report["dataset"]["columns"],
+                "target_counts": report["target"]["counts"],
+                "duplicate_customer_ids": report["duplicate_customer_ids"],
+                "source_sha256": report["source"]["sha256"],
+            },
+            indent=2,
+        )
+    )
 
 
 if __name__ == "__main__":

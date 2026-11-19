@@ -12,6 +12,11 @@ from telco_churn.training import SEED, make_split, prepare_target
 
 DATA_PATH = Path(__file__).resolve().parents[1] / "data" / "raw" / "telco.csv"
 
+pytestmark = pytest.mark.skipif(
+    not DATA_PATH.exists(),
+    reason="the real Telco CSV is git-ignored; add data/raw/telco.csv to run this file",
+)
+
 
 @pytest.fixture(scope="module")
 def small_split():
@@ -51,9 +56,7 @@ def test_positive_class_scores_match_classes_index(small_split):
     model.fit(prepare_features(train_df), prepare_target(train_df))
 
     scores = tracking.positive_class_scores(model, prepare_features(valid_df))
-    expected = model.predict_proba(prepare_features(valid_df))[
-        :, list(model.classes_).index(1)
-    ]
+    expected = model.predict_proba(prepare_features(valid_df))[:, list(model.classes_).index(1)]
     assert scores.tolist() == pytest.approx(expected.tolist())
 
 

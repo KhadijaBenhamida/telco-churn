@@ -1,0 +1,47 @@
+$ uv run python -m pre_commit run --all-files
+trim trailing whitespace.................................................Passed
+fix end of files.........................................................Passed
+check yaml...........................................(no files to check)Skipped
+check for added large files..............................................Passed
+ruff check...............................................................Passed
+ruff format..............................................................Passed
+   Building telco-churn @ file:///C:/Users/khadi/OneDrive/Desktop/MLops/TP1-2%20MLOPS/telco-churn
+      Built telco-churn @ file:///C:/Users/khadi/OneDrive/Desktop/MLops/TP1-2%20MLOPS/telco-churn
+Uninstalled 1 package in 17ms
+Installed 1 package in 26ms
+exit=0
+
+$ git diff --stat
+ .gitignore                              |   8 +
+ README.md                               |  82 +++++++++-
+ evidence/tp01/environment_after.json    |   2 +-
+ models/random_forest_metadata.json      |   2 +-
+ pyproject.toml                          |  45 +++++-
+ reports/data_overview.json              |   2 +-
+ reports/model_comparison.json           |   2 +-
+ reports/tp03_inference_check.json       |   2 +-
+ reports/tp03_reference_predictions.json |   2 +-
+ reports/tp03_selection.json             |   2 +-
+ reports/tp03_summary.md                 |   4 -
+ scripts/inspect_data.py                 |   1 -
+ scripts/tp03_smoke_run.py               |   4 +-
+ scripts/train_mlflow.py                 |  21 ++-
+ scripts/train_model.py                  |  27 ++--
+ src/telco_churn/__init__.py             |   9 +-
+ src/telco_churn/dataset.py              |  30 ++--
+ src/telco_churn/pipeline.py             |  10 +-
+ src/telco_churn/training.py             |  19 ++-
+ tests/test_tp02.py                      |  11 +-
+ tests/test_tp03.py                      |   9 +-
+ uv.lock                                 | 266 +++++++++++++++++++++++++++++++-
+ 22 files changed, 499 insertions(+), 61 deletions(-)
+warning: in the working copy of 'evidence/tp01/environment_after.json', LF will be replaced by CRLF the next time Git touches it
+warning: in the working copy of 'models/random_forest_metadata.json', LF will be replaced by CRLF the next time Git touches it
+warning: in the working copy of 'pyproject.toml', LF will be replaced by CRLF the next time Git touches it
+warning: in the working copy of 'reports/data_overview.json', LF will be replaced by CRLF the next time Git touches it
+warning: in the working copy of 'reports/model_comparison.json', LF will be replaced by CRLF the next time Git touches it
+warning: in the working copy of 'reports/tp03_inference_check.json', LF will be replaced by CRLF the next time Git touches it
+warning: in the working copy of 'reports/tp03_reference_predictions.json', LF will be replaced by CRLF the next time Git touches it
+warning: in the working copy of 'reports/tp03_selection.json', LF will be replaced by CRLF the next time Git touches it
+warning: in the working copy of 'uv.lock', LF will be replaced by CRLF the next time Git touches it
+exit=0

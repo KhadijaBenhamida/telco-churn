@@ -1,0 +1,76 @@
+$ uv run python -m pre_commit validate-config
+exit=0
+
+$ uv run python -m pre_commit install
+pre-commit installed at .git\hooks\pre-commit
+exit=0
+
+$ uv run python -m pre_commit run --all-files
+[INFO] Initializing environment for https://github.com/pre-commit/pre-commit-hooks.
+[INFO] Initializing environment for https://github.com/astral-sh/ruff-pre-commit.
+[INFO] Installing environment for https://github.com/pre-commit/pre-commit-hooks.
+[INFO] Once installed this environment will be reused.
+[INFO] This may take a few minutes...
+[INFO] Installing environment for https://github.com/astral-sh/ruff-pre-commit.
+[INFO] Once installed this environment will be reused.
+[INFO] This may take a few minutes...
+trim trailing whitespace.................................................Failed
+- hook id: trailing-whitespace
+- exit code: 1
+
+[WinError 4551] Une stratÃ©gie de contrÃ´le dâ€™application a bloquÃ© ce fichier
+
+fix end of files.........................................................Failed
+- hook id: end-of-file-fixer
+- exit code: 1
+- files were modified by this hook
+
+Fixing reports/tp03_inference_check.json
+Fixing reports/tp03_reference_predictions.json
+Fixing reports/data_overview.json
+Fixing evidence/tp01/environment_after.json
+Fixing reports/model_comparison.json
+Fixing reports/tp03_summary.md
+Fixing models/random_forest_metadata.json
+Fixing README.md
+Fixing reports/tp03_selection.json
+Fixing pyproject.toml
+
+check yaml...........................................(no files to check)Skipped
+check for added large files..............................................Passed
+ruff check...............................................................Passed
+ruff format..............................................................Passed
+exit=1
+
+$ git status --short
+ M .gitignore
+ M README.md
+ M evidence/tp01/environment_after.json
+ M models/random_forest_metadata.json
+ M pyproject.toml
+ M reports/data_overview.json
+ M reports/model_comparison.json
+ M reports/tp03_inference_check.json
+ M reports/tp03_reference_predictions.json
+ M reports/tp03_selection.json
+ M reports/tp03_summary.md
+ M scripts/inspect_data.py
+ M scripts/tp03_smoke_run.py
+ M scripts/train_mlflow.py
+ M scripts/train_model.py
+ M src/telco_churn/__init__.py
+ M src/telco_churn/dataset.py
+ M src/telco_churn/pipeline.py
+ M src/telco_churn/training.py
+ M tests/test_tp02.py
+ M tests/test_tp03.py
+ M uv.lock
+?? .pre-commit-config.yaml
+?? reports/tp04_evidence/
+?? reports/tp04_summary.md
+?? tests/conftest.py
+?? tests/test_comparison.py
+?? tests/test_input_contract.py
+?? tests/test_persistence.py
+?? tests/test_prediction.py
+exit=0

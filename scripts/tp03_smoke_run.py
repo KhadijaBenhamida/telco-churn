@@ -42,7 +42,9 @@ def main() -> None:
     print(f"Backend store  : {snapshot['backend_store']}")
     print(f"Artifact store : {snapshot['artifact_store']}")
     print(f"Database file exists : {(PROJECT_ROOT / 'mlflow.db').exists()}")
-    print(f"UI             : {snapshot['tracking_uri']}/#/experiments/{experiment_id}/runs/{run_id}")
+    print(
+        f"UI             : {snapshot['tracking_uri']}/#/experiments/{experiment_id}/runs/{run_id}"
+    )
 
 
 if __name__ == "__main__":

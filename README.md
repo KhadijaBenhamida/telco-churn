@@ -234,15 +234,94 @@ Class predictions must match exactly; probabilities are compared with tolerance
 - One fixed split: the comparison is a classroom comparison, not a statistical
   significance test.
 
-## Verification
+## TP04 — tests, linting and pre-commit
 
+TP04 protects the behaviour TP02/TP03 produced. The contract under test:
+
+- the six agreed features are required; `Churn` and `customerID` never reach the model;
+- numeric parsing follows the documented rules (blank cell = missing, garbage = error);
+- missing numbers are imputed and unknown categories are ignored (`handle_unknown="ignore"`);
+- a non-empty batch returns one prediction/probability row per customer;
+- saving and reloading the pipeline preserves predictions;
+- `Churn = Yes` is still class `1` and the class order comes from `classes_`.
+
+### Tools
+
+```powershell
+cd "C:\Users\khadi\OneDrive\Desktop\MLops\TP1-2 MLOPS\telco-churn"
+uv sync                       # dev group: pytest, pytest-cov, ruff, pre-commit
+uv run pytest --version
+uv run ruff --version
+uv run python -m pre_commit --version
+```
+
+`uv run pre-commit ...` cannot spawn `pre-commit.exe` on this machine (application-control
+policy blocks newly written console scripts, exactly as it does `mlflow.exe`), so the
+equivalent `uv run python -m pre_commit ...` is used. Configuration and hook ids are unchanged.
+
+### Run the tests
 
 ```powershell
 uv run pytest -q
+uv run pytest --cov=telco_churn --cov-report=term-missing --cov-report=xml:coverage.xml
 ```
 
-The checks confirm:
+The new behaviour tests use `tests/conftest.py` fixtures (twelve invented customers,
+both classes, no CSV, no network, no MLflow) and finish in about a second; the older
+TP02/TP03 tests still read the real CSV and take the rest of the time.
+
+| File | Behaviour protected |
+|---|---|
+| `tests/test_input_contract.py` | a missing feature is rejected with a `KeyError` naming the column; `Churn`/`customerID` are not features; blank `TotalCharges` is imputed while `"not-a-number"` raises `ValueError` |
+| `tests/test_prediction.py` | unseen category + missing number are accepted (permissive policy); probability shape/bounds/row sums; class-1 score located through `classes_`; labels = threshold on that score |
+| `tests/test_persistence.py` | joblib round trip keeps predictions, probabilities and the learned imputer statistics; `find_latest_model` follows modification time |
+| `tests/test_tp02.py`, `tests/test_tp03.py` | split disjointness, preprocessing contract, evaluation thresholds and provenance (existing TP02/TP03 regression) |
+
+### Lint and format
+
+```powershell
+uv run ruff check src/telco_churn tests scripts
+uv run ruff format --check src/telco_churn tests scripts
+```
+
+Rules are configured in `pyproject.toml` (`E4`, `E7`, `E9`, `F`, `I`, line length 100).
+Automatic fixes were reviewed before being accepted (`ruff check --fix`, `ruff format`).
+
+### Pre-commit hooks
+
+```powershell
+uv run python -m pre_commit validate-config
+uv run python -m pre_commit install          # once per clone
+uv run python -m pre_commit run --all-files  # no staged files needed
+```
+
+`.pre-commit-config.yaml` pins `ruff-pre-commit v0.17.5` (same version as the project
+dependency) with lint-before-format ordering, plus `trailing-whitespace`,
+`end-of-file-fixer`, `check-yaml` and `check-added-large-files`. Hook installation is
+local: a teammate cloning the repository must run `install` once. Full training and the
+MLflow server are deliberately **not** part of the hooks.
+
+### Evidence
+
+`reports/tp04_evidence/` holds the raw logs (`01_pytest.txt`, `02_ruff_before.txt`,
+`03_ruff_fix.txt`, `04_coverage.txt`, `05_regression_failure.txt`,
+`06_regression_fixed.txt`, `07_pre_commit_setup.txt`, `07b_pre_commit_all_files.txt`,
+`08_pre_commit_blocked.txt`, `09_pre_commit_success.txt`) and `reports/tp04_summary.md`
+explains the test-to-risk mapping, the regression demonstration, the coverage gap and the
+quality-gate discussion.
+
+## Verification
+
+```powershell
+uv run pytest -q
+uv run ruff check src/telco_churn tests scripts
+uv run ruff format --check src/telco_churn tests scripts
+```
+
+The suite confirms:
 
 - customer IDs do not overlap across splits
 - required features are present and missing features fail clearly
+- a permissive preprocessing policy still accepts unseen categories and missing numbers
 - the selected pipeline reloads without changing predictions
+- tracking provenance keeps the evaluation protocol and split fingerprints

@@ -9,7 +9,6 @@ dependencies = [
     "matplotlib>=3.11.2",
     "mlflow>=3,<4",
     "pandas>=3.1.0",
-    "pytest>=9.1.1",
     "scikit-learn>=1.9.1",
     "sqlalchemy>=2.0,<2.1",
 ]
@@ -20,3 +19,47 @@ telco-churn = "telco_churn:main"
 [build-system]
 requires = ["uv_build>=0.13.6,<0.14.0"]
 build-backend = "uv_build"
+
+[dependency-groups]
+dev = [
+    "pre-commit>=4.7.0",
+    "pytest>=9.1.1",
+    "pytest-cov>=7.1.0",
+    "ruff>=0.17.5",
+]
+
+# --------------------------------------------------------------------------- #
+# TP04 - test and quality tooling
+# --------------------------------------------------------------------------- #
+[tool.pytest.ini_options]
+testpaths = ["tests"]
+addopts = "-ra"
+
+[tool.ruff]
+line-length = 100
+target-version = "py312"
+src = ["src", "tests"]
+
+[tool.ruff.lint]
+# E4: import style, E7: statement style, E9: runtime errors (syntax),
+# F: Pyflakes (unused names, undefined names), I: import sorting.
+select = ["E4", "E7", "E9", "F", "I"]
+
+[tool.ruff.format]
+quote-style = "double"
+indent-style = "space"
+# The repository is checked out with CRLF on Windows and normalized to LF by Git.
+# "native" keeps the formatter and the working tree in agreement on both platforms.
+line-ending = "native"
+
+[tool.coverage.run]
+source = ["telco_churn"]
+branch = true
+
+[tool.coverage.report]
+show_missing = true
+exclude_lines = [
+    "pragma: no cover",
+    "if __name__ == .__main__.:",
+    "raise NotImplementedError",
+]

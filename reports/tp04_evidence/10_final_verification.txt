@@ -1,0 +1,23 @@
+Final verification of the submitted state.
+
+$ uv run pytest -q
+...................................                                      [100%]
+35 passed in 9.58s
+exit=0
+
+$ uv run ruff check src/telco_churn tests scripts
+All checks passed!
+exit=0
+
+$ uv run ruff format --check src/telco_churn tests scripts
+18 files already formatted
+exit=0
+
+$ uv run python -m pre_commit run --all-files
+trim trailing whitespace.................................................Passed
+fix end of files.........................................................Passed
+check yaml...............................................................Passed
+check for added large files..............................................Passed
+ruff check...............................................................Passed
+ruff format..............................................................Passed
+exit=0

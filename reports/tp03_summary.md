@@ -320,7 +320,3 @@ and (4) the original CSV (`62ca518b…`) if they want the same splits or a refit
 | `reports/tp03_comparison.csv`, `reports/tp03_selection.json`, `reports/tp03_reference_predictions.json`, `reports/tp03_inference_check.json` | machine-readable evidence |
 | `evidence/tp03/*.png` | UI screenshots and the comparison chart |
 | `tests/test_tp03.py` | protocol, provenance and registry-contract tests (no server required) |
-
-
-
-

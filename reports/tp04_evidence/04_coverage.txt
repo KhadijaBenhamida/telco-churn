@@ -1,0 +1,18 @@
+$ uv run pytest -q --cov=telco_churn --cov-report=term-missing --cov-report=xml:coverage.xml
+...................................                                      [100%]
+=============================== tests coverage ================================
+______________ coverage: platform win32, python 3.12.10-final-0 _______________
+
+Name                            Stmts   Miss Branch BrPart  Cover   Missing
+---------------------------------------------------------------------------
+src\telco_churn\__init__.py         6      0      0      0   100%
+src\telco_churn\dataset.py         56     20      8      2    62%   27->26, 30, 56-102, 106-119
+src\telco_churn\pipeline.py        44      2     12      0    96%   83-84
+src\telco_churn\prediction.py      23      1      4      1    93%   31
+src\telco_churn\tracking.py       173     65     26      1    58%   82-89, 94-97, 125-126, 140-141, 151-152, 258-260, 336-340, 347-351, 370-447, 473-490, 505, 510-515
+src\telco_churn\training.py        88      3      8      1    94%   54-57
+---------------------------------------------------------------------------
+TOTAL                             390     91     58      5    74%
+Coverage XML written to file coverage.xml
+35 passed in 31.51s
+exit=0

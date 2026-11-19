@@ -1,0 +1,71 @@
+Deliberate formatting defect: extra spaces around '=' in scripts/tp03_smoke_run.py,
+no behaviour change. The staged commit must be refused by the ruff-format hook.
+
+$ git add -A
+warning: in the working copy of 'evidence/tp01/environment_after.json', LF will be replaced by CRLF the next time Git touches it
+warning: in the working copy of 'models/random_forest_metadata.json', LF will be replaced by CRLF the next time Git touches it
+warning: in the working copy of 'pyproject.toml', LF will be replaced by CRLF the next time Git touches it
+warning: in the working copy of 'reports/data_overview.json', LF will be replaced by CRLF the next time Git touches it
+warning: in the working copy of 'reports/model_comparison.json', LF will be replaced by CRLF the next time Git touches it
+warning: in the working copy of 'reports/tp03_inference_check.json', LF will be replaced by CRLF the next time Git touches it
+warning: in the working copy of 'reports/tp03_reference_predictions.json', LF will be replaced by CRLF the next time Git touches it
+warning: in the working copy of 'reports/tp03_selection.json', LF will be replaced by CRLF the next time Git touches it
+warning: in the working copy of 'uv.lock', LF will be replaced by CRLF the next time Git touches it
+exit=0
+
+$ git commit -m tp04 pre-commit demonstration
+trim trailing whitespace.................................................Failed
+- hook id: trailing-whitespace
+- exit code: 1
+- files were modified by this hook
+
+Fixing reports/tp04_evidence/05_regression_failure.txt
+
+fix end of files.........................................................Failed
+- hook id: end-of-file-fixer
+- exit code: 1
+- files were modified by this hook
+
+Fixing reports/tp04_evidence/03_ruff_fix.txt
+Fixing reports/tp04_evidence/07b_pre_commit_all_files.txt
+Fixing reports/tp04_evidence/07_pre_commit_setup.txt
+Fixing reports/tp04_evidence/06_regression_fixed.txt
+Fixing reports/tp04_summary.md
+Fixing reports/tp04_evidence/02_ruff_before.txt
+
+check yaml...............................................................Failed
+- hook id: check-yaml
+- exit code: 1
+
+[WinError 4551] Une stratÃ©gie de contrÃ´le dâ€™application a bloquÃ© ce fichier
+
+check for added large files..............................................Passed
+ruff check...............................................................Passed
+ruff format..............................................................Failed
+- hook id: ruff-format
+- files were modified by this hook
+
+2 files reformatted, 13 files left unchanged
+
+exit=1
+
+$ git diff -- scripts/tp03_smoke_run.py
+diff --git a/scripts/tp03_smoke_run.py b/scripts/tp03_smoke_run.py
+index cc8bb12..a0101b8 100644
+--- a/scripts/tp03_smoke_run.py
++++ b/scripts/tp03_smoke_run.py
+@@ -29,7 +29,7 @@ def main() -> None:
+         mlflow.log_param("threshold", tracking.DECISION_THRESHOLD)
+         mlflow.log_metric("smoke_value", 1.0)
+         mlflow.set_tag("stage", "tp03-section-1")
+-        run_id    =    run.info.run_id
++        run_id = run.info.run_id
+
+     fetched = MlflowClient().get_run(run_id)
+     snapshot = tracking.tracking_snapshot(args.tracking_uri)
+exit=0
+
+$ git log --oneline -2
+abcc9ae Merge origin/main (README handover-note removal) into TP03 work
+442065f Add TP03 evidence, summary report and recorded identifiers
+exit=0

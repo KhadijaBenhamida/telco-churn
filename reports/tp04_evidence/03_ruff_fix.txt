@@ -1,0 +1,33 @@
+$ uv run ruff check --fix src/telco_churn tests scripts
+Found 11 errors (11 fixed, 0 remaining).
+exit=0
+
+$ uv run ruff format src/telco_churn tests scripts
+8 files reformatted, 9 files left unchanged
+exit=0
+
+$ uv run ruff check src/telco_churn tests scripts
+All checks passed!
+exit=0
+
+$ uv run ruff format --check src/telco_churn tests scripts
+17 files already formatted
+exit=0
+
+$ git diff --stat
+ pyproject.toml              |  46 +++++++-
+ scripts/inspect_data.py     |   1 -
+ scripts/tp03_smoke_run.py   |   4 +-
+ scripts/train_mlflow.py     |  21 +++-
+ scripts/train_model.py      |  27 +++--
+ src/telco_churn/__init__.py |   9 +-
+ src/telco_churn/dataset.py  |  30 +++--
+ src/telco_churn/pipeline.py |  10 +-
+ src/telco_churn/training.py |  19 +++-
+ tests/test_tp02.py          |   6 +-
+ tests/test_tp03.py          |   4 +-
+ uv.lock                     | 266 +++++++++++++++++++++++++++++++++++++++++++-
+ 12 files changed, 395 insertions(+), 48 deletions(-)
+warning: in the working copy of 'pyproject.toml', LF will be replaced by CRLF the next time Git touches it
+warning: in the working copy of 'uv.lock', LF will be replaced by CRLF the next time Git touches it
+exit=0

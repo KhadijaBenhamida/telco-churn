@@ -1,0 +1,447 @@
+$ uv run ruff check src/telco_churn tests scripts
+I001 [*] Import block is un-sorted or un-formatted
+ --> scripts\inspect_data.py:1:1
+  |
+1 | from telco_churn.dataset import main
+  | ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+help: Organize imports
+  |
+2 |
+  -
+3 | if __name__ == "__main__":
+  |
+
+F401 [*] `pandas` imported but unused
+ --> scripts\train_model.py:7:18
+  |
+5 | from pathlib import Path
+6 |
+7 | import pandas as pd
+  |                  ^^
+8 |
+9 | from telco_churn.training import compare_models, train_and_select
+  |
+help: Remove unused import: `pandas`
+  |
+6 |
+  - import pandas as pd
+7 |
+  |
+
+F401 [*] `telco_churn.training.compare_models` imported but unused
+ --> scripts\train_model.py:9:34
+  |
+7 | import pandas as pd
+8 |
+9 | from telco_churn.training import compare_models, train_and_select
+  |                                  ^^^^^^^^^^^^^^
+help: Remove unused import: `telco_churn.training.compare_models`
+   |
+8  |
+   - from telco_churn.training import compare_models, train_and_select
+9  + from telco_churn.training import train_and_select
+10 |
+   |
+
+I001 [*] Import block is un-sorted or un-formatted
+ --> src\telco_churn\__init__.py:3:1
+  |
+1 |   """Telco churn project package."""
+2 |
+3 | / from .dataset import build_report, read_telco_data
+4 | | from .pipeline import FEATURES, NUMERIC_FEATURES, CATEGORICAL_FEATURES, build_pipeline, prepare_features
+5 | | from .prediction import load_model, predict_customers
+6 | | from .training import compare_models, train_and_select
+  | |______________________________________________________^
+7 |
+8 |   __all__ = [
+  |
+help: Organize imports
+   |
+3  | from .dataset import build_report, read_telco_data
+   - from .pipeline import FEATURES, NUMERIC_FEATURES, CATEGORICAL_FEATURES, build_pipeline, prepare_features
+4  + from .pipeline import (
+5  +     CATEGORICAL_FEATURES,
+6  +     FEATURES,
+7  +     NUMERIC_FEATURES,
+8  +     build_pipeline,
+9  +     prepare_features,
+10 + )
+11 | from .prediction import load_model, predict_customers
+   |
+
+F401 [*] `.dataset.PROJECT_ROOT` imported but unused
+  --> src\telco_churn\pipeline.py:11:22
+   |
+ 9 | from sklearn.preprocessing import OneHotEncoder, StandardScaler
+10 |
+11 | from .dataset import PROJECT_ROOT, read_telco_data
+   |                      ^^^^^^^^^^^^
+12 |
+13 | NUMERIC_FEATURES = ["tenure", "MonthlyCharges", "TotalCharges"]
+   |
+help: Remove unused import: `.dataset.PROJECT_ROOT`
+   |
+10 |
+   - from .dataset import PROJECT_ROOT, read_telco_data
+11 + from .dataset import read_telco_data
+12 |
+   |
+
+I001 [*] Import block is un-sorted or un-formatted
+  --> src\telco_churn\training.py:1:1
+   |
+ 1 | / from __future__ import annotations
+ 2 | |
+ 3 | | import json
+ 4 | | from pathlib import Path
+ 5 | |
+ 6 | | import joblib
+ 7 | | import numpy as np
+ 8 | | import pandas as pd
+ 9 | | from sklearn.dummy import DummyClassifier
+10 | | from sklearn.ensemble import RandomForestClassifier
+11 | | from sklearn.linear_model import LogisticRegression
+12 | | from sklearn.metrics import accuracy_score, average_precision_score, confusion_matrix, precision_recall_fscore_support
+13 | | from sklearn.model_selection import train_test_split
+14 | | from sklearn.tree import DecisionTreeClassifier
+15 | |
+16 | | from .dataset import PROJECT_ROOT, compute_file_hash, read_telco_data, resolve_source
+17 | | from .pipeline import FEATURES, TARGET_COLUMN, build_pipeline, prepare_features
+   | |_______________________________________________________________________________^
+18 |
+19 |   MODEL_DIR = PROJECT_ROOT / "models"
+   |
+help: Organize imports
+   |
+11 | from sklearn.linear_model import LogisticRegression
+   - from sklearn.metrics import accuracy_score, average_precision_score, confusion_matrix, precision_recall_fscore_support
+12 + from sklearn.metrics import (
+13 +     accuracy_score,
+14 +     average_precision_score,
+15 +     confusion_matrix,
+16 +     precision_recall_fscore_support,
+17 + )
+18 | from sklearn.model_selection import train_test_split
+   |
+
+F401 [*] `json` imported but unused
+ --> tests\test_tp02.py:3:8
+  |
+1 | from __future__ import annotations
+2 |
+3 | import json
+  |        ^^^^
+4 | from pathlib import Path
+  |
+help: Remove unused import: `json`
+  |
+2 |
+  - import json
+3 | from pathlib import Path
+  |
+
+F401 [*] `pandas` imported but unused
+ --> tests\test_tp02.py:6:18
+  |
+4 | from pathlib import Path
+5 |
+6 | import pandas as pd
+  |                  ^^
+7 | import pytest
+  |
+help: Remove unused import: `pandas`
+  |
+5 |
+  - import pandas as pd
+6 | import pytest
+  |
+
+F401 [*] `telco_churn.prediction.predict_customers` imported but unused
+  --> tests\test_tp02.py:11:48
+   |
+ 9 | from telco_churn.dataset import read_telco_data
+10 | from telco_churn.pipeline import FEATURES, prepare_features
+11 | from telco_churn.prediction import load_model, predict_customers
+   |                                                ^^^^^^^^^^^^^^^^^
+12 | from telco_churn.training import make_split, prepare_target, train_and_select
+   |
+help: Remove unused import: `telco_churn.prediction.predict_customers`
+   |
+10 | from telco_churn.pipeline import FEATURES, prepare_features
+   - from telco_churn.prediction import load_model, predict_customers
+11 + from telco_churn.prediction import load_model
+12 | from telco_churn.training import make_split, prepare_target, train_and_select
+   |
+
+F401 [*] `telco_churn.training.prepare_target` imported but unused
+  --> tests\test_tp02.py:12:46
+   |
+10 | from telco_churn.pipeline import FEATURES, prepare_features
+11 | from telco_churn.prediction import load_model, predict_customers
+12 | from telco_churn.training import make_split, prepare_target, train_and_select
+   |                                              ^^^^^^^^^^^^^^
+13 |
+14 | DATA_PATH = Path(__file__).resolve().parents[1] / "data" / "raw" / "telco.csv"
+   |
+help: Remove unused import: `telco_churn.training.prepare_target`
+   |
+11 | from telco_churn.prediction import load_model, predict_customers
+   - from telco_churn.training import make_split, prepare_target, train_and_select
+12 + from telco_churn.training import make_split, train_and_select
+13 |
+   |
+
+Found 10 errors.
+[*] 10 fixable with `--fix`.
+   Building telco-churn @ file:///C:/Users/khadi/OneDrive/Desktop/MLops/TP1-2%20MLOPS/telco-churn
+      Built telco-churn @ file:///C:/Users/khadi/OneDrive/Desktop/MLops/TP1-2%20MLOPS/telco-churn
+Uninstalled 1 package in 15ms
+Installed 1 package in 43ms
+exit=1
+
+$ uv run ruff format --check src/telco_churn tests scripts
+unformatted: File would be reformatted
+  --> scripts\tp03_smoke_run.py:45:11
+   |
+44 |     print(f"Database file exists : {(PROJECT_ROOT / 'mlflow.db').exists()}")
+   -     print(f"UI             : {snapshot['tracking_uri']}/#/experiments/{experiment_id}/runs/{run_id}")
+45 +     print(
+46 +         f"UI             : {snapshot['tracking_uri']}/#/experiments/{experiment_id}/runs/{run_id}"
+47 +     )
+48 |
+   |
+
+unformatted: File would be reformatted
+   --> scripts\train_mlflow.py:69:23
+    |
+68  |     """Deterministic small batch with complete numeric inputs, sorted by customerID."""
+    -     usable = valid_df[
+    -         valid_df["TotalCharges"].astype("string").str.strip().ne("")
+    -     ].copy()
+69  +     usable = valid_df[valid_df["TotalCharges"].astype("string").str.strip().ne("")].copy()
+70  |     return usable.sort_values("customerID").head(count).reset_index(drop=True)
+--------------------------------------------------------------------------------
+276 |         comparison[
+    -             ["candidate", "val_average_precision", "val_precision", "val_recall", "val_f1", "decision"]
+277 +             [
+278 +                 "candidate",
+279 +                 "val_average_precision",
+280 +                 "val_precision",
+281 +                 "val_recall",
+282 +                 "val_f1",
+283 +                 "decision",
+284 +             ]
+285 |         ].to_string(index=False)
+--------------------------------------------------------------------------------
+294 |         print()
+    -         print(f"Registered model : {registry['registered_model_name']} version {registry['version']}")
+    -         print(f"Alias            : {registry['alias']} -> version {registry['alias_now_points_to_version']}")
+295 +         print(
+296 +             f"Registered model : {registry['registered_model_name']} version {registry['version']}"
+297 +         )
+298 +         print(
+299 +             f"Alias            : {registry['alias']} -> version {registry['alias_now_points_to_version']}"
+300 +         )
+301 |         print(f"Alias model URI  : {registry['alias_model_uri']}")
+    |
+
+unformatted: File would be reformatted
+  --> scripts\train_model.py:13:38
+   |
+12 | def main() -> None:
+   -     parser = argparse.ArgumentParser(description="Train and compare churn models for the Telco dataset.")
+   -     parser.add_argument("--source", type=str, default=None, help="Path to the raw CSV source dataset.")
+13 +     parser = argparse.ArgumentParser(
+14 +         description="Train and compare churn models for the Telco dataset."
+15 +     )
+16 +     parser.add_argument(
+17 +         "--source", type=str, default=None, help="Path to the raw CSV source dataset."
+18 +     )
+19 |     parser.add_argument(
+--------------------------------------------------------------------------------
+28 |     comparison.to_json(args.output, orient="records", indent=2)
+   -     print(json.dumps({
+   -         "selected_model": metadata["model_name"],
+   -         "selected_metrics": metadata["metrics"],
+   -         "artifact": metadata["artifact"],
+   -     }, indent=2))
+29 +     print(
+30 +         json.dumps(
+31 +             {
+32 +                 "selected_model": metadata["model_name"],
+33 +                 "selected_metrics": metadata["metrics"],
+34 +                 "artifact": metadata["artifact"],
+35 +             },
+36 +             indent=2,
+37 +         )
+38 +     )
+39 |
+   |
+
+unformatted: File would be reformatted
+  --> src\telco_churn\__init__.py:1:35
+   |
+   - """Telco churn project package."""
+   -
+   - from .dataset import build_report, read_telco_data
+   - from .pipeline import FEATURES, NUMERIC_FEATURES, CATEGORICAL_FEATURES, build_pipeline, prepare_features
+   - from .prediction import load_model, predict_customers
+   - from .training import compare_models, train_and_select
+   -
+   - __all__ = [
+   -     "FEATURES",
+   -     "NUMERIC_FEATURES",
+   -     "CATEGORICAL_FEATURES",
+   -     "build_pipeline",
+   -     "prepare_features",
+   -     "build_report",
+   -     "read_telco_data",
+   -     "load_model",
+   -     "predict_customers",
+   -     "compare_models",
+   -     "train_and_select",
+   - ]
+   - __version__ = "0.1.0"
+   -
+1  + """Telco churn project package."""
+2  +
+3  + from .dataset import build_report, read_telco_data
+4  + from .pipeline import (
+5  +     FEATURES,
+6  +     NUMERIC_FEATURES,
+7  +     CATEGORICAL_FEATURES,
+8  +     build_pipeline,
+9  +     prepare_features,
+10 + )
+11 + from .prediction import load_model, predict_customers
+12 + from .training import compare_models, train_and_select
+13 +
+14 + __all__ = [
+15 +     "FEATURES",
+16 +     "NUMERIC_FEATURES",
+17 +     "CATEGORICAL_FEATURES",
+18 +     "build_pipeline",
+19 +     "prepare_features",
+20 +     "build_report",
+21 +     "read_telco_data",
+22 +     "load_model",
+23 +     "predict_customers",
+24 +     "compare_models",
+25 +     "train_and_select",
+26 + ]
+27 + __version__ = "0.1.0"
+   |
+
+unformatted: File would be reformatted
+   --> src\telco_churn\dataset.py:53:18
+    |
+52  |
+    - def build_report(source: str | Path | None = None, output_path: str | Path | None = None) -> dict[str, Any]:
+53  + def build_report(
+54  +     source: str | Path | None = None, output_path: str | Path | None = None
+55  + ) -> dict[str, Any]:
+56  |     path = resolve_source(source)
+--------------------------------------------------------------------------------
+62  |     whitespace_only_by_column = {
+    -         column: int(string_df[column].str.strip().eq("").sum())
+    -         for column in string_df.columns
+63  +         column: int(string_df[column].str.strip().eq("").sum()) for column in string_df.columns
+64  |     }
+--------------------------------------------------------------------------------
+105 | def main() -> None:
+    -     parser = argparse.ArgumentParser(description="Inspect the Telco churn dataset and save a machine-readable report.")
+106 +     parser = argparse.ArgumentParser(
+107 +         description="Inspect the Telco churn dataset and save a machine-readable report."
+108 +     )
+109 |     parser.add_argument("--source", type=str, default=None, help="Path to the dataset to inspect.")
+--------------------------------------------------------------------------------
+118 |     report = build_report(args.source, args.output)
+    -     print(json.dumps({
+    -         "rows": report["dataset"]["rows"],
+    -         "columns": report["dataset"]["columns"],
+    -         "target_counts": report["target"]["counts"],
+    -         "duplicate_customer_ids": report["duplicate_customer_ids"],
+    -         "source_sha256": report["source"]["sha256"],
+    -     }, indent=2))
+119 +     print(
+120 +         json.dumps(
+121 +             {
+122 +                 "rows": report["dataset"]["rows"],
+123 +                 "columns": report["dataset"]["columns"],
+124 +                 "target_counts": report["target"]["counts"],
+125 +                 "duplicate_customer_ids": report["duplicate_customer_ids"],
+126 +                 "source_sha256": report["source"]["sha256"],
+127 +             },
+128 +             indent=2,
+129 +         )
+130 +     )
+131 |
+    |
+
+unformatted: File would be reformatted
+  --> src\telco_churn\pipeline.py:19:33
+   |
+18 |
+   - def clean_telco_numeric_columns(frame: pd.DataFrame, columns: list[str] | None = None) -> pd.DataFrame:
+19 + def clean_telco_numeric_columns(
+20 +     frame: pd.DataFrame, columns: list[str] | None = None
+21 + ) -> pd.DataFrame:
+22 |     """Convert numeric columns to numeric dtypes while preserving malformed nonblank values as visible errors."""
+--------------------------------------------------------------------------------
+72 |             validated = validated.drop(columns=[column])
+   -     validated = clean_telco_numeric_columns(validated, columns=["tenure", "MonthlyCharges", "TotalCharges"])
+73 +     validated = clean_telco_numeric_columns(
+74 +         validated, columns=["tenure", "MonthlyCharges", "TotalCharges"]
+75 +     )
+76 |     missing = [feature for feature in FEATURES if feature not in validated.columns]
+   |
+
+unformatted: File would be reformatted
+   --> src\telco_churn\training.py:12:29
+    |
+11  | from sklearn.linear_model import LogisticRegression
+    - from sklearn.metrics import accuracy_score, average_precision_score, confusion_matrix, precision_recall_fscore_support
+12  + from sklearn.metrics import (
+13  +     accuracy_score,
+14  +     average_precision_score,
+15  +     confusion_matrix,
+16  +     precision_recall_fscore_support,
+17  + )
+18  | from sklearn.model_selection import train_test_split
+--------------------------------------------------------------------------------
+28  |
+    - def make_split(frame: pd.DataFrame, random_state: int = SEED) -> tuple[pd.DataFrame, pd.DataFrame, pd.DataFrame]:
+29  + def make_split(
+30  +     frame: pd.DataFrame, random_state: int = SEED
+31  + ) -> tuple[pd.DataFrame, pd.DataFrame, pd.DataFrame]:
+32  |     train_df, remaining_df = train_test_split(
+--------------------------------------------------------------------------------
+114 |
+    - def save_selected_model(model, model_name: str, metrics: dict, source: str | Path | None = None) -> dict:
+115 + def save_selected_model(
+116 +     model, model_name: str, metrics: dict, source: str | Path | None = None
+117 + ) -> dict:
+118 |     MODEL_DIR.mkdir(exist_ok=True, parents=True)
+--------------------------------------------------------------------------------
+160 |
+    -     comparison = pd.DataFrame(results).sort_values("average_precision", ascending=False, ignore_index=True)
+161 +     comparison = pd.DataFrame(results).sort_values(
+162 +         "average_precision", ascending=False, ignore_index=True
+163 +     )
+164 |     selected_name, selected_metrics = select_best_model(comparison)
+    |
+
+unformatted: File would be reformatted
+  --> tests\test_tp03.py:54:64
+   |
+53 |     scores = tracking.positive_class_scores(model, prepare_features(valid_df))
+   -     expected = model.predict_proba(prepare_features(valid_df))[
+   -         :, list(model.classes_).index(1)
+   -     ]
+54 +     expected = model.predict_proba(prepare_features(valid_df))[:, list(model.classes_).index(1)]
+55 |     assert scores.tolist() == pytest.approx(expected.tolist())
+   |
+
+8 files would be reformatted, 9 files already formatted
+exit=1

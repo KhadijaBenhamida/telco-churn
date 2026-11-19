@@ -12,7 +12,7 @@ pip-audit 2.10.1 · Gitleaks 8.30.1
 | Dependency audit (`pip-audit`) | **GitHub Actions** (`dependency-audit`) | **pass** — 14 s, no advisories (same run) |
 | Secret scan (Gitleaks 8.30.1) | **GitHub Actions** (`secret-scan`) | **pass** — 7 s, no leaks (same run) |
 | Red check → repair | PR #6 (two runs) | **failed then green** (§3) |
-| Dependabot | `.github/dependabot.yml` on `main` | **4 update PRs opened** (#1–#4) |
+| Dependabot | `.github/dependabot.yml` on `main` | **4 PRs opened**, #1 declined with a reason, #2–#4 awaiting checks |
 | Local reproduction | `uv sync --locked` + the three checks | **pass** (`reports/tp05_evidence/01_local_checks.txt`) |
 
 The workflow was first blocked: the `gh` token had scopes `gist, read:org, repo` and GitHub
@@ -296,7 +296,16 @@ compiled `*_cy.pyd` extensions that this Windows machine's application-control p
 which is exactly why `pyproject.toml` pins `>=2.0,<2.1` (TP03 note). The Linux runner has no
 such policy, so the PR would very plausibly be green — and the project would still break on the
 author's laptop. That is a case for a manual `uv sync --locked` check on the target platform,
-not an auto-merge.
+not an auto-merge. **PR #1 was therefore closed with that reasoning** instead of merged.
+
+The other three were opened *before* the workflow existed on `main`, so GitHub shows
+`no checks reported` on them — a workflow is not applied retroactively to an existing PR head.
+I asked Dependabot to rebase them (`@dependabot rebase`); once it pushes a new commit the
+three jobs run on that PR and the procedure above applies as written. Until then they stay
+open: merging an unvalidated dependency bump would be exactly the behaviour this TP argues
+against. If a rebased PR fails `quality`, it gets closed with the failing run link rather than
+`--admin`-merged.
+
 
 
 ## 6. Recorded GitHub Actions runs

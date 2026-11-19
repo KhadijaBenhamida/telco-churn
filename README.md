@@ -1,6 +1,24 @@
 # Telco Churn project
 
-This repository contains the Telco Customer Churn project for the ESILV MLOps TP01 and TP02 workflow. The objective is to keep the raw data immutable, document the source clearly, reproduce the inspection step, and train a reusable churn model with preprocessing and a saved artifact.
+[![Telco CI](https://github.com/KhadijaBenhamida/telco-churn/actions/workflows/ci.yml/badge.svg)](https://github.com/KhadijaBenhamida/telco-churn/actions/workflows/ci.yml)
+
+This repository contains the Telco Customer Churn project for the ESILV MLOps coursework
+(TP01 → TP05). The objective is to keep the raw data immutable, document the source clearly,
+reproduce the inspection step, train a reusable churn model with preprocessing and a saved
+artifact, track and register the experiments with MLflow, protect the behaviour with tests and
+quality checks, and run those checks automatically in GitHub Actions.
+
+Every push and pull request to `main` runs three jobs on `ubuntu-latest`:
+`quality` (Ruff + the pytest suite), `dependency-audit` (`pip-audit`) and `secret-scan`
+(Gitleaks). See `.github/workflows/ci.yml`; the per-TP reports live in `reports/`.
+
+| TP | Topic | Report |
+|---|---|---|
+| TP02 | preprocessing pipeline, baseline vs 3 classifiers, saved artifact | `reports/model_comparison.json` |
+| TP03 | MLflow tracking, registry version + alias, fresh-process reload | `reports/tp03_summary.md` |
+| TP04 | pytest suite, Ruff, coverage, pre-commit | `reports/tp04_summary.md` |
+| TP05 | GitHub Actions, pip-audit, Gitleaks, Dependabot | `reports/tp05_summary.md` |
+
 
 ## Business objective
 

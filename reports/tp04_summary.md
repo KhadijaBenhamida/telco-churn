@@ -28,7 +28,10 @@ checks catch what the tests cannot.
 Fixtures live in `tests/conftest.py`: twelve invented customers with the six columns
 (raw string `TotalCharges`, mixed contracts/services/payment methods), a balanced binary
 target, and the *real* pipeline builder fitted on that fixture. No CSV read, no network,
-no MLflow, no `fit()` of a large model — the whole TP04 block runs in ~1 s.
+no MLflow, no `fit()` of a large model — the whole TP04 block runs in ~1 s. The suite is
+**35 tests: 11 inherited from TP02/TP03 and 24 added here** (11 + 7 in
+`test_input_contract.py` / `test_prediction.py` counting the parametrized cases, 5 in
+`test_persistence.py`, 1 in `test_comparison.py`).
 
 | # | Test | Real defect it would catch |
 |---|---|---|

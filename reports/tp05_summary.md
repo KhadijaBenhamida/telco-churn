@@ -8,26 +8,24 @@ pip-audit 2.10.1 · Gitleaks 8.30.1
 
 | Check | Where | Result |
 |---|---|---|
-| Ruff + TP04 tests (35 tests) | local reproduction of the workflow | **pass** (`reports/tp05_evidence/01_local_checks.txt`) |
-| Dependency audit (`pip-audit`) | local, locked environment | **pass** — no known vulnerabilities (`04_pip_audit.txt`) |
-| Secret scan (Gitleaks 8.30.1) | local, clean checkout + synthetic marker | **pass** / detection demonstrated (`05`, `06`) |
-| Dependabot | `.github/dependabot.yml` on `main` | **in place** (`uv` + `github-actions`, weekly) |
-| GitHub Actions runs | `.github/workflows/ci.yml` | **blocked by a token permission** — see §6 |
+| Ruff, format and TP04 tests | **GitHub Actions** (`quality`) | **pass** — 26 s ([run](https://github.com/KhadijaBenhamida/telco-churn/actions/runs/44561877608)) |
+| Dependency audit (`pip-audit`) | **GitHub Actions** (`dependency-audit`) | **pass** — 14 s, no advisories (same run) |
+| Secret scan (Gitleaks 8.30.1) | **GitHub Actions** (`secret-scan`) | **pass** — 7 s, no leaks (same run) |
+| Red check → repair | PR #6 (two runs) | **failed then green** (§3) |
+| Dependabot | `.github/dependabot.yml` on `main` | **3 update PRs opened** (#2, #3, #4) |
+| Local reproduction | `uv sync --locked` + the three checks | **pass** (`reports/tp05_evidence/01_local_checks.txt`) |
 
-The workflow file is complete and valid (`check-yaml` in the pre-commit suite passes on it),
-but it cannot be pushed from this machine: the GitHub credential available here (the `gh`
-OAuth token, scopes `gist, read:org, repo`) lacks the `workflow` scope, and GitHub refuses
-any `git push` or REST call that creates a file under `.github/workflows/`:
+The workflow was first blocked: the `gh` token had scopes `gist, read:org, repo` and GitHub
+refuses to create `.github/workflows/` without the `workflow` scope (`git push` rejected,
+REST API 404). After `gh auth refresh -s workflow` the file was pushed and the checks ran.
 
-```text
-! [remote rejected] tp05/ci -> tp05/ci (refusing to allow an OAuth App to create or update
-  workflow `.github/workflows/ci.yml` without `workflow` scope)
-error: failed to push some refs to 'https://github.com/KhadijaBenhamida/telco-churn.git'
-```
+Two early CI attempts failed for real reasons and were fixed in the workflow, not bypassed:
 
-Everything that does **not** need that scope is already merged on `main` (Dependabot
-configuration, `pip-audit` dev dependency + lockfile, all local evidence). §6 gives the
-single command that finishes the remaining part.
+| Run | Symptom | Fix |
+|---|---|---|
+| [44560954002](https://github.com/KhadijaBenhamida/telco-churn/actions/runs/44560954002) | `Unable to resolve action astral-sh/setup-uv@68559e9…` | the SHA is the tag object, not the commit → pinned `astral-sh/setup-uv@v10.3.3` |
+| [44561713750](https://github.com/KhadijaBenhamida/telco-churn/actions/runs/44561713750) | `gitleaks: command not found` (exit 127) | `GITHUB_PATH` only applies to *later* steps → `sudo install` the binary into `/usr/local/bin` |
+
 
 ## 1. Local reproduction of the CI checks
 
@@ -68,11 +66,13 @@ code runs without gaining repository rights.
 | `dependency-audit` | checkout → setup-uv → `uv sync --locked` → `uv run --locked pip-audit` | audits the installed environment, dev tools included |
 | `secret-scan` | checkout → install Gitleaks 8.30.1 (SHA-256 verified) → `git archive` the tracked files → `gitleaks dir --redact --exit-code 1` | scans exactly the committed content |
 
-Actions are pinned by commit SHA (with the release in a trailing comment):
-`actions/checkout` v7.0.1 → `3d3c42e5aac5ba805825da76410c181273ba90b1`,
-`astral-sh/setup-uv` v10.3.3 → `68559e99cc807c1eb7e9238fd43a15bba4600eec`. The Gitleaks
-release is downloaded during the job and its published SHA-256 is verified before the binary
-is executed.
+Actions are pinned to reviewed releases: `actions/checkout` by commit SHA
+(`3d3c42e5aac5ba805825da76410c181273ba90b1`, release v7.0.1) and `astral-sh/setup-uv` by its
+release tag `v10.3.3` — pinning that tag by SHA does not work, the value `68559e9…` is the tag
+object and the action resolver answers *"unable to find version"*, which is what the first run
+showed. The Gitleaks release is downloaded during the job and its published SHA-256 is
+verified before the binary is executed.
+
 
 ```yaml
 name: Telco CI
@@ -93,7 +93,7 @@ jobs:
     steps:
       - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1   # v7.0.1
         with: {persist-credentials: false}
-      - uses: astral-sh/setup-uv@68559e99cc807c1eb7e9238fd43a15bba4600eec  # v10.3.3
+      - uses: astral-sh/setup-uv@v10.3.3                                  # release tag
         with:
           version: ${{ env.UV_VERSION }}
           python-version: ${{ env.PYTHON_VERSION }}
@@ -109,7 +109,7 @@ jobs:
     timeout-minutes: 10
     steps:
       - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1   # v7.0.1
-      - uses: astral-sh/setup-uv@68559e99cc807c1eb7e9238fd43a15bba4600eec  # v10.3.3
+      - uses: astral-sh/setup-uv@v10.3.3                                  # release tag
         with: {version: "0.13.9", python-version: "3.12", enable-cache: true}
       - run: uv sync --locked
       - run: uv run --locked pip-audit
@@ -147,34 +147,44 @@ compares the formatted result with the file on disk and exits non-zero; only `ru
 commit under review, and a job that rewrites files would either hide the problem or leave
 changes nobody committed.
 
-## 3. Red check on a pull request
+## 3. Red check on a pull request (demonstrated)
 
-The regression is prepared but **cannot be demonstrated until §6 is unblocked**, because no
-workflow can run before the workflow file is on GitHub. The identical change was already
-proven to fail the suite locally in TP04
-(`reports/tp04_evidence/05_regression_failure.txt`):
+Branch `tp05/regression`, PR [#6](https://github.com/KhadijaBenhamida/telco-churn/pull/6):
+`OneHotEncoder(handle_unknown="ignore")` → `"error"` in `build_preprocessor()`. The change is
+syntactically valid and Ruff-clean, so only a behavioural check can catch it.
+
+**Red run** ([44562157190](https://github.com/KhadijaBenhamida/telco-churn/actions/runs/44562157190)):
 
 ```text
-$ uv run pytest tests/test_prediction.py -q     # with handle_unknown="error"
+Ruff and TP04 tests    fail    24s    ← the only failing job
+Gitleaks secret scan   pass     5s
+pip-audit              pass    19s
+
 FAILED tests/test_prediction.py::test_unseen_category_and_missing_number_are_accepted
+  - ValueError: Found unknown categories ['Three year contract'] in column 0 during transform
 FAILED tests/test_prediction.py::test_unknown_category_does_not_leak_into_other_columns
-E   ValueError: Found unknown categories ['Three year contract'] in column 0 during transform
-2 failed, 5 passed in 36.71s
+  - ValueError: Found unknown categories ['Three year contract'] in column 0 during transform
+2 failed, 25 passed, 8 skipped in 7.50s
 ```
 
-Procedure the finishing script executes (branch `tp05/regression`, PR against `main`):
+Diagnosis (three sentences): the encoder now rejects a category it never saw during fitting,
+which is exactly the permissive policy the TP02 contract promises. The two failing tests are
+the ones written for that risk, and the traceback points at
+`sklearn/preprocessing/_encoders.py:221` as expected. The 8 skipped tests are the CSV-dependent
+ones — the runner has no `data/raw/telco.csv`, which is why the suite was made CSV-free in TP04.
 
-1. `OneHotEncoder(handle_unknown="ignore")` → `"error"` in `build_preprocessor()`
-   (syntactically valid and Ruff-clean, so only a behavioural check can catch it).
-2. Push and open the PR → the `quality` job fails on
-   `test_unseen_category_and_missing_number_are_accepted`; the other jobs stay green, which
-   is exactly the "which check failed" signal the job names provide.
-3. Read the traceback in the Actions log, restore `handle_unknown="ignore"`, push again →
-   the same job turns green.
-4. Merge the PR and keep the branch; both runs stay linked to the PR.
+**Green run after the fix** ([44562327009](https://github.com/KhadijaBenhamida/telco-churn/actions/runs/44562327009),
+commit `685416a` "fix: restore the permissive unknown-category policy"):
 
-What will be quoted here once it runs: the failing run URL, the passing run URL and the two
-or three sentences of diagnosis.
+```text
+Ruff and TP04 tests    pass    35s
+Gitleaks secret scan   pass     6s
+pip-audit              pass    16s
+```
+
+No test was touched, no assertion weakened, no `--no-verify`. PR #6 was merged after the green
+run, so `main` carries the fixed implementation and both runs stay attached to the PR.
+
 
 ## 4. Security checks
 
@@ -255,33 +265,42 @@ in the Git objects (and in clones, forks and CI caches) after the file is fixed,
 **revoked or rotated** first; rewriting history is a separate, disruptive operation that cannot
 reach copies other people already pulled.
 
-## 5. Dependabot
+## 5. Dependabot (bot PRs opened)
 
 `.github/dependabot.yml` (on `main`) requests **version** updates weekly for two ecosystems:
 `uv` at `/` (keeps `pyproject.toml` + `uv.lock` current) and `github-actions` at `/` (keeps the
-SHA pins fresh). Each entry sets a commit-message prefix, labels and a five-PR limit. Version
-updates are separate from Dependabot *alerts* and *security* updates, which depend on
+action pins fresh). Each entry sets a commit-message prefix, labels and a five-PR limit.
+Version updates are separate from Dependabot *alerts* and *security* updates, which depend on
 repository settings.
 
-How I would review an update PR: read the release notes and the changelog between the two
-versions; check that the diff only bumps the version and the lockfile hashes; confirm the
-`quality`, `dependency-audit` and `secret-scan` jobs are green on that PR; inspect the pytest
-output for behaviour changes; then merge. For a major bump I would run `uv sync` plus the full
-suite locally first. For a `github-actions` update I would check the new SHA against the
-upstream release tag, because that SHA is what the pin documents.
+The bot acted on the configuration within the same session and opened three proposals:
 
-## 6. Finish in one step (needs a token with the `workflow` scope)
+| PR | Update | Type |
+|---|---|---|
+| [#2](https://github.com/KhadijaBenhamida/telco-churn/pull/2) | `pytest` 9.1.1 → 9.2.0 | dev dependency |
+| [#3](https://github.com/KhadijaBenhamida/telco-churn/pull/3) | `uv-build` `>=0.13.6,<0.14.0` → `>=0.13.8,<0.14.0` | build backend |
+| [#4](https://github.com/KhadijaBenhamida/telco-churn/pull/4) | `pandas` 3.1.0 → 3.1.1 | runtime dependency |
 
-```powershell
-gh auth refresh -s workflow     # approve in the browser, then:
-powershell -NoProfile -ExecutionPolicy Bypass -File C:\Users\khadi\mlops_stage\finish_tp05.ps1
-```
+They are left open on purpose: the lab asks how I would review them, not to merge blindly.
+Review procedure — read the release notes/changelog between the two versions; check that the
+diff only bumps the version and the `uv.lock` hashes (no new transitive dependency);
+confirm the three jobs are green on that PR **for that commit**; scan the pytest output for
+behaviour changes (a pandas minor can alter dtype handling, which is exactly what the
+`TotalCharges` parsing tests guard); then merge. For a major bump I would additionally run
+`uv sync --locked` and the full suite locally, and for a `github-actions` update I would check
+the new SHA against the upstream release tag, since that is what the pin documents.
 
-The script pushes `.github/workflows/ci.yml`, opens PR #1 (CI runs), then creates the
-regression branch and PR #2, captures the red run, restores the implementation, captures the
-green run, merges both PRs and finally writes the run links into this report. Until then the
-repository holds the workflow content above, the Dependabot configuration and all local
-evidence, but no Actions runs.
+## 6. Recorded GitHub Actions runs
+
+| Event | Workflow / jobs | Run |
+|---|---|---|
+| PR [#5](https://github.com/KhadijaBenhamida/telco-churn/pull/5) — add the pipeline (merged) | quality ✅ · pip-audit ✅ · secret-scan ✅ | [44561877608](https://github.com/KhadijaBenhamida/telco-churn/actions/runs/44561877608) |
+| PR #6 — regression (red) | quality ❌ · pip-audit ✅ · secret-scan ✅ | [44562157190](https://github.com/KhadijaBenhamida/telco-churn/actions/runs/44562157190) |
+| PR #6 — after the fix (green, merged) | quality ✅ · pip-audit ✅ · secret-scan ✅ | [44562327009](https://github.com/KhadijaBenhamida/telco-churn/actions/runs/44562327009) |
+
+The two earlier failures (setup-uv SHA, Gitleaks PATH) are listed in §0 together with their
+fixes; they are part of how the pipeline was made reproducible rather than something to hide.
+
 
 **Limits of these checks.** CI proves that the checks ran on the committed code, not that the
 model is good: the suite protects the input/output contract, Ruff protects style and obvious

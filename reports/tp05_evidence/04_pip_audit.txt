@@ -1,0 +1,13 @@
+Dependency audit of the locked project environment (TP05 section 4A).
+Scope: every installed distribution in .venv, including dev tools.
+
+$ uv run --locked python -m pip_audit --version
+pip-audit 2.10.1
+exit=0
+
+$ uv run --locked python -m pip_audit
+Name        Skip Reason
+----------- --------------------------------------------------------------------------
+telco-churn Dependency not found on PyPI and could not be audited: telco-churn (0.1.0)
+No known vulnerabilities found
+exit=0

@@ -1,0 +1,30 @@
+Synthetic classroom marker detection (TP05 section 4B).
+config: C:\Users\khadi\mlops_stage\gitleaks-demo.toml  (extends the default rules)
+demo directory: C:\Users\khadi\mlops_stage\gitleaks_demo  (outside the repository)
+
+$ gitleaks dir --config gitleaks-demo.toml --redact --exit-code 1 C:\Users\khadi\mlops_stage\gitleaks_demo
+
+    â—‹
+    â”‚â•²
+    â”‚ â—‹
+    â—‹ â–‘
+    â–‘    gitleaks
+
+[90m3:08PM[0m [32mINF[0m [1mscanned ~93 bytes (93 bytes) in 2.54ms[0m
+[90m3:08PM[0m [33mWRN[0m [1mleaks found: 1[0m
+
+exit=1
+
+Marker file removed; rescanning the same directory.
+$ gitleaks dir --config gitleaks-demo.toml --redact --exit-code 1 C:\Users\khadi\mlops_stage\gitleaks_demo
+
+    â—‹
+    â”‚â•²
+    â”‚ â—‹
+    â—‹ â–‘
+    â–‘    gitleaks
+
+[90m3:08PM[0m [32mINF[0m [1mscanned ~0 bytes (0) in 2.56ms[0m
+[90m3:08PM[0m [32mINF[0m [1mno leaks found[0m
+
+exit=0

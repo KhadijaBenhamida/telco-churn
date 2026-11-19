@@ -1,0 +1,19 @@
+Local reproduction of the GitHub Actions checks (TP05 section 1).
+
+$ uv sync --locked
+Resolved 111 packages in 3ms
+Checked 110 packages in 20ms
+exit=0
+
+$ uv run --locked ruff check src/telco_churn tests scripts
+All checks passed!
+exit=0
+
+$ uv run --locked ruff format --check src/telco_churn tests scripts
+18 files already formatted
+exit=0
+
+$ uv run --locked pytest -q
+...................................                                      [100%]
+35 passed in 10.76s
+exit=0

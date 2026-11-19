@@ -1,0 +1,16 @@
+$ gitleaks.exe version
+8.30.1
+
+Clean-checkout scan (git archive of HEAD, i.e. exactly what CI checks out).
+$ gitleaks dir --redact --exit-code 1 C:\Users\khadi\mlops_stage\clean_checkout
+
+    â—‹
+    â”‚â•²
+    â”‚ â—‹
+    â—‹ â–‘
+    â–‘    gitleaks
+
+[90m3:08PM[0m [32mINF[0m [1mscanned ~13329607 bytes (13.33 MB) in 410ms[0m
+[90m3:08PM[0m [32mINF[0m [1mno leaks found[0m
+
+exit=0

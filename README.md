@@ -318,7 +318,47 @@ uv run ruff check src/telco_churn tests scripts
 uv run ruff format --check src/telco_churn tests scripts
 ```
 
-The suite confirms:
+## TP05 — GitHub Actions, dependency audit and secret scanning
+
+TP05 runs the TP04 checks on every pull request and push to `main`, then adds two
+security checks and Dependabot. Everything runs on a standard `ubuntu-latest` runner
+with `permissions: contents: read`: no secrets, no write access, no Telco CSV and no
+MLflow server are needed (the CSV-dependent tests skip, as designed in TP04).
+
+### Workflow
+
+| File | Purpose |
+|---|---|
+| `.github/workflows/ci.yml` | `quality` (Ruff + tests), `dependency-audit` (pip-audit), `secret-scan` (Gitleaks) |
+| `.github/dependabot.yml` | weekly version updates for the `uv` project and `github-actions` |
+
+Triggers: `pull_request` (targeting `main`) and `push` (to `main`). Actions are pinned to
+commit SHAs (`actions/checkout` v7.0.1, `astral-sh/setup-uv` v10.3.3) and the Gitleaks
+binary is downloaded from the official v8.30.1 release with its published SHA-256 verified
+before use.
+
+### Reproduce the CI checks locally
+
+```powershell
+cd "C:\Users\khadi\OneDrive\Desktop\MLops\TP1-2 MLOPS\telco-churn"
+uv sync --locked
+uv run --locked ruff check src/telco_churn tests scripts
+uv run --locked ruff format --check src/telco_churn tests scripts
+uv run --locked pytest -q
+uv run --locked python -m pip_audit      # `uv run --locked pip-audit` in CI
+```
+
+`pip-audit` and `pre-commit` console scripts are blocked by this machine's
+application-control policy, hence the module form locally; the workflow uses the plain
+commands on Linux.
+
+### Evidence
+
+`reports/tp05_evidence/` keeps the local reproduction (`01_local_checks.txt`), the audit
+(`04_pip_audit.txt`), the clean-checkout secret scan (`05_gitleaks_repo.txt`) and the
+synthetic-marker demonstration (`06_gitleaks_demo.txt`); the pull-request runs are linked
+from `reports/tp05_summary.md`.
+
 
 - customer IDs do not overlap across splits
 - required features are present and missing features fail clearly

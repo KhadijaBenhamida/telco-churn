@@ -204,6 +204,14 @@ To recover the selected pipeline without running training again:
 uv run python scripts/predict_mlflow.py --model-uri "models:/telco-churn@candidate"
 ```
 
+Values recorded for this submission (always re-derivable from
+`reports/tp03_selection.json`):
+
+- selected run `eb5c7ba6dcd64484996c312cd9dfeba3` (`forest-leaf5`, validation AP 0.6526)
+- logged model `models:/m-477af62b21674c358b732911532f7a50`
+- registered model `telco-churn` version `1`, alias `candidate`
+- Git commit `91da09b8d5f9612f61b47768eabe80252133df54`, data SHA-256 `62ca518b…a20c`
+
 The script loads the logged pipeline (no `fit()` call), predicts five documented
 customers and compares them with `reports/tp03_reference_predictions.json`.
 Class predictions must match exactly; probabilities are compared with tolerance

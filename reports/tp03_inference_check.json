@@ -1,5 +1,5 @@
 {
-  "checked_at_utc": "2026-11-19T08:35:43+00:00",
+  "checked_at_utc": "2026-11-19T08:44:59+00:00",
   "tracking_uri": "http://127.0.0.1:5000",
   "model_uri": "models:/telco-churn@candidate",
   "alias": {
@@ -7,14 +7,14 @@
     "alias": "candidate",
     "version": "1",
     "version_status": "READY",
-    "source_run_id": "models:/m-f1198d6db7c44832a4daba44c8280747",
+    "source_run_id": "models:/m-477af62b21674c358b732911532f7a50",
     "resolved_alias_uri": "models:/telco-churn@candidate"
   },
   "logged_model": {
     "model_uri": "models:/telco-churn@candidate",
-    "model_uuid": "m-f1198d6db7c44832a4daba44c8280747",
-    "run_id": "0b3fc076d24e46668e3094d408377867",
-    "artifact_path": "mlflow-artifacts:/1/models/m-f1198d6db7c44832a4daba44c8280747/artifacts",
+    "model_uuid": "m-477af62b21674c358b732911532f7a50",
+    "run_id": "eb5c7ba6dcd64484996c312cd9dfeba3",
+    "artifact_path": "mlflow-artifacts:/1/models/m-477af62b21674c358b732911532f7a50/artifacts",
     "flavors": [
       "python_function",
       "sklearn"
@@ -29,7 +29,7 @@
     ]
   },
   "reference_file": "C:\\Users\\khadi\\OneDrive\\Desktop\\MLops\\TP1-2 MLOPS\\telco-churn\\reports\\tp03_reference_predictions.json",
-  "reference_run_id": "0b3fc076d24e46668e3094d408377867",
+  "reference_run_id": "eb5c7ba6dcd64484996c312cd9dfeba3",
   "reference_candidate": "forest-leaf5",
   "threshold": 0.5,
   "compared_rows": 5,

@@ -8,3 +8,13 @@ __pycache__/
 *.log
 .DS_Store
 data/raw/*.csv
+
+# MLflow local tracking storage (kept on disk for the demo, not versioned)
+mlflow.db
+mlflow.db-*
+mlartifacts/
+mlruns/
+mlflow-server.pid
+
+# Local copies of logged artifacts (the tracked copies live in mlartifacts/)
+reports/tp03_artifacts/

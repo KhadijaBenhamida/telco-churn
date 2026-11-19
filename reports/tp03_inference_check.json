@@ -1,0 +1,89 @@
+{
+  "checked_at_utc": "2026-11-19T08:35:43+00:00",
+  "tracking_uri": "http://127.0.0.1:5000",
+  "model_uri": "models:/telco-churn@candidate",
+  "alias": {
+    "registered_model_name": "telco-churn",
+    "alias": "candidate",
+    "version": "1",
+    "version_status": "READY",
+    "source_run_id": "models:/m-f1198d6db7c44832a4daba44c8280747",
+    "resolved_alias_uri": "models:/telco-churn@candidate"
+  },
+  "logged_model": {
+    "model_uri": "models:/telco-churn@candidate",
+    "model_uuid": "m-f1198d6db7c44832a4daba44c8280747",
+    "run_id": "0b3fc076d24e46668e3094d408377867",
+    "artifact_path": "mlflow-artifacts:/1/models/m-f1198d6db7c44832a4daba44c8280747/artifacts",
+    "flavors": [
+      "python_function",
+      "sklearn"
+    ],
+    "signature_inputs": [
+      "tenure:DataType.long",
+      "MonthlyCharges:DataType.double",
+      "TotalCharges:DataType.double",
+      "Contract:DataType.string",
+      "InternetService:DataType.string",
+      "PaymentMethod:DataType.string"
+    ]
+  },
+  "reference_file": "C:\\Users\\khadi\\OneDrive\\Desktop\\MLops\\TP1-2 MLOPS\\telco-churn\\reports\\tp03_reference_predictions.json",
+  "reference_run_id": "0b3fc076d24e46668e3094d408377867",
+  "reference_candidate": "forest-leaf5",
+  "threshold": 0.5,
+  "compared_rows": 5,
+  "class_predictions_agree": true,
+  "max_absolute_probability_delta": 0.0,
+  "probability_tolerance": 1e-09,
+  "probabilities_within_tolerance": true,
+  "fresh_process": true,
+  "fit_called_in_this_process": false,
+  "rows": [
+    {
+      "customerID": "0002-ORFBO",
+      "recorded_prediction": 0,
+      "reloaded_prediction": 0,
+      "agree": true,
+      "recorded_probability": 0.189672,
+      "reloaded_probability": 0.189672,
+      "absolute_delta": 0.0
+    },
+    {
+      "customerID": "0004-TLHLJ",
+      "recorded_prediction": 1,
+      "reloaded_prediction": 1,
+      "agree": true,
+      "recorded_probability": 0.578996,
+      "reloaded_probability": 0.578996,
+      "absolute_delta": 0.0
+    },
+    {
+      "customerID": "0013-EXCHZ",
+      "recorded_prediction": 0,
+      "reloaded_prediction": 0,
+      "agree": true,
+      "recorded_probability": 0.498506,
+      "reloaded_probability": 0.498506,
+      "absolute_delta": 0.0
+    },
+    {
+      "customerID": "0017-IUDMW",
+      "recorded_prediction": 0,
+      "reloaded_prediction": 0,
+      "agree": true,
+      "recorded_probability": 0.018139,
+      "reloaded_probability": 0.018139,
+      "absolute_delta": 0.0
+    },
+    {
+      "customerID": "0023-XUOPT",
+      "recorded_prediction": 1,
+      "reloaded_prediction": 1,
+      "agree": true,
+      "recorded_probability": 0.640818,
+      "reloaded_probability": 0.640818,
+      "absolute_delta": 0.0
+    }
+  ]
+}

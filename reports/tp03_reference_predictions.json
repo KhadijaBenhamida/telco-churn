@@ -1,0 +1,73 @@
+{
+  "run_id": "0b3fc076d24e46668e3094d408377867",
+  "logged_model_uri": "models:/m-f1198d6db7c44832a4daba44c8280747",
+  "candidate": "forest-leaf5",
+  "threshold": 0.5,
+  "features": [
+    "tenure",
+    "MonthlyCharges",
+    "TotalCharges",
+    "Contract",
+    "InternetService",
+    "PaymentMethod"
+  ],
+  "input_schema": "customerID + six unencoded feature columns, exactly as read from the CSV",
+  "note": "class prediction = 1 when the class-1 probability is >= 0.5",
+  "records": [
+    {
+      "customerID": "0002-ORFBO",
+      "tenure": 9,
+      "MonthlyCharges": 65.6,
+      "TotalCharges": "593.3",
+      "Contract": "One year",
+      "InternetService": "DSL",
+      "PaymentMethod": "Mailed check",
+      "prediction": 0,
+      "probability": 0.189671644613554
+    },
+    {
+      "customerID": "0004-TLHLJ",
+      "tenure": 4,
+      "MonthlyCharges": 73.9,
+      "TotalCharges": "280.85",
+      "Contract": "Month-to-month",
+      "InternetService": "Fiber optic",
+      "PaymentMethod": "Electronic check",
+      "prediction": 1,
+      "probability": 0.5789957004253081
+    },
+    {
+      "customerID": "0013-EXCHZ",
+      "tenure": 3,
+      "MonthlyCharges": 83.9,
+      "TotalCharges": "267.4",
+      "Contract": "Month-to-month",
+      "InternetService": "Fiber optic",
+      "PaymentMethod": "Mailed check",
+      "prediction": 0,
+      "probability": 0.4985062528590704
+    },
+    {
+      "customerID": "0017-IUDMW",
+      "tenure": 72,
+      "MonthlyCharges": 116.8,
+      "TotalCharges": "8456.75",
+      "Contract": "Two year",
+      "InternetService": "Fiber optic",
+      "PaymentMethod": "Credit card (automatic)",
+      "prediction": 0,
+      "probability": 0.018139325244664002
+    },
+    {
+      "customerID": "0023-XUOPT",
+      "tenure": 13,
+      "MonthlyCharges": 94.1,
+      "TotalCharges": "1215.6",
+      "Contract": "Month-to-month",
+      "InternetService": "Fiber optic",
+      "PaymentMethod": "Electronic check",
+      "prediction": 1,
+      "probability": 0.6408183063767062
+    }
+  ]
+}

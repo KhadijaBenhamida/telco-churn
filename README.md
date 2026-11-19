@@ -99,9 +99,135 @@ uv run python -c "import joblib; from telco_churn.prediction import load_model; 
 
 This confirms that the artifact can be loaded and used without retraining.
 
+## TP03 — track, compare and recover experiments with MLflow
+
+TP03 adds experiment tracking to the TP02 workflow. The six features, the
+stratified 60/20/20 customer allocation, the preprocessing pipeline and the
+validation protocol are unchanged; only the recording layer is new.
+
+### Install the tracking dependencies
+
+```powershell
+cd "C:\Users\khadi\OneDrive\Desktop\MLops\TP1-2 MLOPS\telco-churn"
+uv add "mlflow>=3,<4" matplotlib
+uv run mlflow --version
+```
+
+Two environment notes for this machine:
+
+- `sqlalchemy` is pinned to `>=2.0,<2.1`. SQLAlchemy 2.1 ships compiled
+  extensions (`*_cy.pyd`) that the local Windows application-control policy
+  blocks; 2.0 falls back to its pure-Python implementation and starts normally.
+  This is a server-side dependency only; MLflow accepts `sqlalchemy<3`.
+- The `mlflow.exe` console script of a freshly installed package can be blocked
+  by the same policy. The helper scripts therefore launch the server with
+  `uv run python -m mlflow server ...`, the exact equivalent of
+  `uv run mlflow server ...`.
+
+### 1. Start the tracking server (terminal 1, keep it running)
+
+```powershell
+cd "C:\Users\khadi\OneDrive\Desktop\MLops\TP1-2 MLOPS\telco-churn"
+uv run mlflow server --host 127.0.0.1 --port 5000 --backend-store-uri sqlite:///mlflow.db --artifacts-destination ./mlartifacts
+```
+
+Equivalent helper (background, writes `mlflow-server.log`):
+
+```powershell
+powershell -NoProfile -ExecutionPolicy Bypass -File scripts/start_tracking_server.ps1
+powershell -NoProfile -ExecutionPolicy Bypass -File scripts/stop_tracking_server.ps1
+```
+
+Open <http://127.0.0.1:5000>. The experiment is `telco-churn-tp03`.
+
+### 2. Recorded workflow (terminal 2)
+
+```powershell
+# section 1 check: one experiment, one run, one parameter, then read it back
+uv run python scripts/tp03_smoke_run.py
+
+# four tracked candidate runs + comparison + registration + reference batch
+uv run python scripts/train_mlflow.py --source "C:\Users\khadi\OneDrive\Desktop\MLops\datasets.csv"
+
+# fresh-process reload through the alias and prediction agreement check
+uv run python scripts/predict_mlflow.py
+```
+
+`scripts/train_mlflow.py` creates one run per candidate
+(`baseline-majority`, `logistic-C1`, `tree-depth6`, `forest-leaf5`), each with:
+
+| Logged item | Content |
+|---|---|
+| Parameters | `model_type`, real hyperparameters (`hp_*`), `random_state`, `threshold`, `train_rows`, `valid_rows`, `n_features` |
+| Metrics | `val_average_precision` (primary), `val_precision`, `val_recall`, `val_f1`, `val_accuracy` |
+| Tags | `git_commit`, `git_worktree_dirty`, `data_sha256`, `split_protocol`, `primary_metric`, `threshold_policy`, `test_set_usage` |
+| Artifacts | `validation/<run>_confusion_matrix.png`, `provenance.json`, `validation/validation_metrics.json` |
+| Dataset inputs | `telco_train` (context `training`), `telco_validation` (context `validation`) |
+| Model | the complete fitted `Pipeline(preprocessor -> classifier)` as `churn_pipeline` |
+
+Generated evidence stays in the repository (small text files):
+
+- `reports/tp03_comparison.csv` — the candidate table
+- `reports/tp03_selection.json` — run IDs, model URIs, registry identifiers, limitations
+- `reports/tp03_reference_predictions.json` — predictions of the selected run on five customers
+- `reports/tp03_inference_check.json` — reload agreement evidence
+- `reports/tp03_artifacts/` — local copies of the confusion-matrix PNGs
+- `reports/tp03_summary.md` — the deliverable summary
+
+### 3. Where the tracking data lives
+
+| Component | Location | Holds |
+|---|---|---|
+| Backend store | `mlflow.db` (SQLite) | experiments, runs, params, metrics, tags, dataset records, model registry versions and aliases |
+| Artifact store | `mlartifacts/` | model files, confusion matrices, `provenance.json` |
+| Tracking server | `http://127.0.0.1:5000` | receives logging/query requests, serves the UI |
+| Training client | `uv run python ...` | runs the training code and sends records to the server |
+
+`mlflow.db` and `mlartifacts/` are ignored by Git but kept on disk for the demo.
+Stopping the server never deletes them: restart it from the same project root
+with the same `--backend-store-uri sqlite:///mlflow.db` and
+`--artifacts-destination ./mlartifacts`, and every run, registered version and
+alias is still there.
+
+### 4. Handover identifiers and recovery
+
+| Identifier | Question it answers |
+|---|---|
+| Run ID | which execution produced the result |
+| Logged model URI (`runs:/<run_id>/churn_pipeline`) | which recorded model artifact to load |
+| Registered name + version (`telco-churn`, e.g. `1`) | which version belongs to the managed model |
+| Alias `candidate` | which version currently fills that role |
+
+To recover the selected pipeline without running training again:
+
+```powershell
+uv run python scripts/predict_mlflow.py --model-uri "models:/telco-churn@candidate"
+```
+
+The script loads the logged pipeline (no `fit()` call), predicts five documented
+customers and compares them with `reports/tp03_reference_predictions.json`.
+Class predictions must match exactly; probabilities are compared with tolerance
+`1e-9`. A specific version can be pinned with `--model-uri "models:/telco-churn/<version>"`.
+
+### 5. Known limitations
+
+- Tracking is local: `mlflow.db`, `mlartifacts/` and `models:/telco-churn@candidate`
+  only resolve on this machine. A classmate needs the database **and** the
+  artifact directory (or a shared tracking server) plus a compatible
+  environment (`uv sync --locked`).
+- The CSV SHA-256 identifies the file bytes; it cannot rebuild the CSV. Keep the
+  original file and the recorded per-split `customer_id_sha256` fingerprints
+  (`provenance.json`) to distinguish two allocations of the same CSV.
+- MLflow dataset records store a name, digest and schema; they are not dataset
+  version control, and their digest differs from the original-file SHA-256.
+- An alias is a mutable pointer, not a copy and not a deployment. A process that
+  already loaded the model keeps its in-memory object; it must load again to see
+  a new version.
+- One fixed split: the comparison is a classroom comparison, not a statistical
+  significance test.
+
 ## Verification
 
-The repository includes a small validation suite:
 
 ```powershell
 uv run pytest -q

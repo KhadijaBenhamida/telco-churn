@@ -12,9 +12,10 @@ from telco_churn.training import SEED, make_split, prepare_target
 
 DATA_PATH = Path(__file__).resolve().parents[1] / "data" / "raw" / "telco.csv"
 
-pytestmark = pytest.mark.skipif(
+# Only the tests that read the real CSV need the file; the provenance/registry checks do not.
+requires_csv = pytest.mark.skipif(
     not DATA_PATH.exists(),
-    reason="the real Telco CSV is git-ignored; add data/raw/telco.csv to run this file",
+    reason="the real Telco CSV is git-ignored; add data/raw/telco.csv to run this test",
 )
 
 
@@ -25,6 +26,7 @@ def small_split():
     return train_df.head(400), valid_df.head(200)
 
 
+@requires_csv
 def test_evaluation_uses_validation_protocol_and_threshold(small_split):
     from sklearn.linear_model import LogisticRegression
 
@@ -48,6 +50,7 @@ def test_evaluation_uses_validation_protocol_and_threshold(small_split):
     assert sum(sum(row) for row in result["confusion_matrix"]) == len(valid_df)
 
 
+@requires_csv
 def test_positive_class_scores_match_classes_index(small_split):
     from sklearn.linear_model import LogisticRegression
 
@@ -60,6 +63,7 @@ def test_positive_class_scores_match_classes_index(small_split):
     assert scores.tolist() == pytest.approx(expected.tolist())
 
 
+@requires_csv
 def test_provenance_records_identity_and_split_fingerprints(small_split):
     train_df, valid_df = small_split
     provenance = tracking.build_provenance(
@@ -89,6 +93,7 @@ def test_provenance_records_identity_and_split_fingerprints(small_split):
     )
 
 
+@requires_csv
 def test_split_fingerprint_changes_with_allocation():
     frame = read_telco_data(DATA_PATH)
     first_train, first_valid, _ = make_split(frame, random_state=42)
@@ -138,6 +143,7 @@ def test_candidate_configurations_cover_three_learned_models():
     assert set(module.describe_hyperparameters(candidates["logistic-C1"])) >= {"C", "max_iter"}
 
 
+@requires_csv
 def test_dataset_exposes_documented_feature_columns():
     frame = read_telco_data(DATA_PATH)
     prepared = prepare_features(frame)

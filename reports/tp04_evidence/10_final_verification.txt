@@ -2,7 +2,7 @@ Final verification of the submitted state.
 
 $ uv run pytest -q
 ...................................                                      [100%]
-35 passed in 9.58s
+35 passed in 8.92s
 exit=0
 
 $ uv run ruff check src/telco_churn tests scripts

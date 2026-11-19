@@ -12,7 +12,7 @@ pip-audit 2.10.1 · Gitleaks 8.30.1
 | Dependency audit (`pip-audit`) | **GitHub Actions** (`dependency-audit`) | **pass** — 14 s, no advisories (same run) |
 | Secret scan (Gitleaks 8.30.1) | **GitHub Actions** (`secret-scan`) | **pass** — 7 s, no leaks (same run) |
 | Red check → repair | PR #6 (two runs) | **failed then green** (§3) |
-| Dependabot | `.github/dependabot.yml` on `main` | **3 update PRs opened** (#2, #3, #4) |
+| Dependabot | `.github/dependabot.yml` on `main` | **4 update PRs opened** (#1–#4) |
 | Local reproduction | `uv sync --locked` + the three checks | **pass** (`reports/tp05_evidence/01_local_checks.txt`) |
 
 The workflow was first blocked: the `gh` token had scopes `gist, read:org, repo` and GitHub
@@ -277,6 +277,7 @@ The bot acted on the configuration within the same session and opened three prop
 
 | PR | Update | Type |
 |---|---|---|
+| [#1](https://github.com/KhadijaBenhamida/telco-churn/pull/1) | `sqlalchemy` 2.0.58 → 2.1.8 | runtime dependency |
 | [#2](https://github.com/KhadijaBenhamida/telco-churn/pull/2) | `pytest` 9.1.1 → 9.2.0 | dev dependency |
 | [#3](https://github.com/KhadijaBenhamida/telco-churn/pull/3) | `uv-build` `>=0.13.6,<0.14.0` → `>=0.13.8,<0.14.0` | build backend |
 | [#4](https://github.com/KhadijaBenhamida/telco-churn/pull/4) | `pandas` 3.1.0 → 3.1.1 | runtime dependency |
@@ -289,6 +290,14 @@ behaviour changes (a pandas minor can alter dtype handling, which is exactly wha
 `TotalCharges` parsing tests guard); then merge. For a major bump I would additionally run
 `uv sync --locked` and the full suite locally, and for a `github-actions` update I would check
 the new SHA against the upstream release tag, since that is what the pin documents.
+
+PR #1 is the concrete example of why CI green is not sufficient: `sqlalchemy 2.1` ships
+compiled `*_cy.pyd` extensions that this Windows machine's application-control policy blocks,
+which is exactly why `pyproject.toml` pins `>=2.0,<2.1` (TP03 note). The Linux runner has no
+such policy, so the PR would very plausibly be green — and the project would still break on the
+author's laptop. That is a case for a manual `uv sync --locked` check on the target platform,
+not an auto-merge.
+
 
 ## 6. Recorded GitHub Actions runs
 

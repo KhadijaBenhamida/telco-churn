@@ -1,0 +1,47 @@
+The same commit is retried after re-staging what the hooks modified.
+No --no-verify, no hook disabled.
+
+$ uv run python -m pre_commit run --all-files
+trim trailing whitespace.................................................Passed
+fix end of files.........................................................Passed
+check yaml...............................................................Passed
+check for added large files..............................................Passed
+ruff check...............................................................Passed
+ruff format..............................................................Passed
+exit=0
+
+$ git add -A
+exit=0
+
+$ git commit -m Add TP04 behaviour tests, Ruff and pre-commit tooling with evidence
+[main e06bf23] Add TP04 behaviour tests, Ruff and pre-commit tooling with evidence
+ 39 files changed, 2262 insertions(+), 62 deletions(-)
+ create mode 100644 .pre-commit-config.yaml
+ create mode 100644 reports/tp04_evidence/01_pytest.txt
+ create mode 100644 reports/tp04_evidence/02_ruff_before.txt
+ create mode 100644 reports/tp04_evidence/03_ruff_fix.txt
+ create mode 100644 reports/tp04_evidence/04_coverage.txt
+ create mode 100644 reports/tp04_evidence/05_regression_failure.txt
+ create mode 100644 reports/tp04_evidence/06_regression_fixed.txt
+ create mode 100644 reports/tp04_evidence/07_pre_commit_setup.txt
+ create mode 100644 reports/tp04_evidence/07b_pre_commit_all_files.txt
+ create mode 100644 reports/tp04_evidence/08_pre_commit_blocked.txt
+ create mode 100644 reports/tp04_evidence/10_final_verification.txt
+ create mode 100644 reports/tp04_summary.md
+ create mode 100644 tests/conftest.py
+ create mode 100644 tests/test_comparison.py
+ create mode 100644 tests/test_input_contract.py
+ create mode 100644 tests/test_persistence.py
+ create mode 100644 tests/test_prediction.py
+trim trailing whitespace.................................................Passed
+fix end of files.........................................................Passed
+check yaml...............................................................Passed
+check for added large files..............................................Passed
+ruff check...............................................................Passed
+ruff format..............................................................Passed
+exit=0
+
+$ git log --oneline -2
+e06bf23 Add TP04 behaviour tests, Ruff and pre-commit tooling with evidence
+abcc9ae Merge origin/main (README handover-note removal) into TP03 work
+exit=0

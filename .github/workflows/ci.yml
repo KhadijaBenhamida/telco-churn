@@ -1,4 +1,4 @@
-﻿name: Telco CI
+name: Telco CI
 
 on:
   pull_request:
@@ -32,7 +32,7 @@ jobs:
           persist-credentials: false
 
       - name: Install uv and Python
-        uses: astral-sh/setup-uv@v10.3.3 # release tag
+        uses: astral-sh/setup-uv@v10.4.0 # release tag
         with:
           version: ${{ env.UV_VERSION }}
           python-version: ${{ env.PYTHON_VERSION }}
@@ -61,7 +61,7 @@ jobs:
           persist-credentials: false
 
       - name: Install uv and Python
-        uses: astral-sh/setup-uv@v10.3.3 # release tag
+        uses: astral-sh/setup-uv@v10.4.0 # release tag
         with:
           version: ${{ env.UV_VERSION }}
           python-version: ${{ env.PYTHON_VERSION }}
